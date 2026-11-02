@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>TRAE 情报台</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' fill='%23111316'/%3E%3Cpath d='M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z' fill='none' stroke='%23ffd84d' stroke-width='1.6'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- ==================== 侧栏导航 ==================== -->
+  <aside class="nav" id="nav">
+    <div class="nav-brand">
+      <svg class="logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/><path d="M10 6.5h4M6.5 10v4M17.5 10v4M10 17.5h4" stroke-width="1.5"/></svg>
+      <div class="bt"><div class="name">TRAE 情报台</div><span class="sub">INTEL DESK</span></div>
+    </div>
+    <div class="nav-items">
+      <div class="nav-item active" data-page="overview">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+        <span class="nl">概览</span>
+      </div>
+      <div class="nav-item" data-page="timeline">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="12" r="2.5"/><path d="M6 8.5v7M8.5 6H17M8.5 18H12M16 12h2"/></svg>
+        <span class="nl">活动时间线</span>
+      </div>
+      <div class="nav-item" data-page="feed">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+        <span class="nl">论坛信息流</span>
+      </div>
+      <div class="nav-item" data-page="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></svg>
+        <span class="nl">全局检索</span>
+      </div>
+      <div class="nav-item" data-page="manage">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.2 2.2M16.2 16.2l2.2 2.2M18.4 5.6l-2.2 2.2M7.8 16.2l-2.2 2.2"/></svg>
+        <span class="nl">数据管理</span>
+      </div>
+    </div>
+    <div class="nav-foot">
+      <button class="nf-btn" id="btnFetch">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg>
+        <span>抓取最新动态</span>
+      </button>
+      <button class="nf-btn" id="btnToggleNav" title="折叠侧栏">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><path d="M15 6l-6 6 6 6M4 4v16"/></svg>
+        <span>折叠侧栏</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ==================== 主区 ==================== -->
+  <div class="main">
+    <header class="hd">
+      <h1 id="hdTitle">概览</h1>
+      <span class="crumb" id="hdCrumb">OVERVIEW</span>
+      <div class="spacer"></div>
+      <div class="hd-actions">
+        <span class="loading" id="fetchState" style="display:none"><span class="spin"></span><span id="fetchStateText">抓取中…</span></span>
+        <span class="badge" id="backendState" title="抓取通道状态" style="cursor:pointer">检测中…</span>
+        <span class="badge" id="dataStat" title="已收录条目 / 上次抓取"></span>
+        <button class="btn primary" id="hdFetch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg>
+          抓取最新
+        </button>
+        <button class="icon" id="btnExport" title="导出 JSON 备份"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg></button>
+        <button class="icon" id="btnImport" title="导入 JSON"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15V3M7 8l5-5 5 5M4 21h16"/></svg></button>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- ===== 概览 ===== -->
+      <section class="page active" id="page-overview">
+        <div class="grid g4" id="ovStats"></div>
+        <div class="grid g2" style="margin-top:14px">
+          <div class="panel">
+            <div class="p-hd">进行中 / 即将开始的活动 <span class="p-sub">按截止时间排序</span></div>
+            <div class="p-bd" id="ovActs"></div>
+          </div>
+          <div class="panel">
+            <div class="p-hd">论坛热点 <span class="p-sub">近 7 天 · 按热度</span></div>
+            <div class="p-bd" id="ovHot"></div>
+          </div>
+        </div>
+        <div class="panel" style="margin-top:14px">
+          <div class="p-hd">最近动态 <span class="p-sub" id="ovLogSub"></span></div>
+          <div class="p-bd" id="ovLog"></div>
+        </div>
+      </section>
+
+      <!-- ===== 活动时间线 ===== -->
+      <section class="page" id="page-timeline">
+        <div class="fbar">
+          <div class="f f-grow">
+            <label>关键词</label>
+            <input type="text" id="tlQ" placeholder="搜索活动标题 / 要求…">
+          </div>
+          <div class="f">
+            <label>状态</label>
+            <select id="tlStatus"><option value="">全部</option><option value="running">进行中</option><option value="upcoming">未开始</option><option value="ended">已结束</option></select>
+          </div>
+          <div class="f">
+            <label>来源</label>
+            <select id="tlSrc"><option value="">全部</option><option value="forum">论坛</option><option value="feishu">飞书</option><option value="manual">手动</option></select>
+          </div>
+          <div class="f">
+            <label>视图</label>
+            <div class="vtabs"><span class="vt on" data-vt="list">时间线</span><span class="vt" data-vt="cal">日历</span></div>
+          </div>
+        </div>
+        <div id="tlList"></div>
+        <div id="tlCal" style="display:none">
+          <div class="cal-nav">
+            <button class="btn" id="calPrev">◀</button>
+            <span class="t" id="calTitle"></span>
+            <button class="btn" id="calNext">▶</button>
+            <button class="btn" id="calToday" style="margin-left:auto">今天</button>
+          </div>
+          <div class="cal" id="calGrid"></div>
+        </div>
+      </section>
+
+      <!-- ===== 论坛信息流 ===== -->
+      <section class="page" id="page-feed">
+        <div class="fbar">
+          <div class="f f-grow">
+            <label>搜索</label>
+            <input type="text" id="fdQ" placeholder="在信息流中搜索标题 / 作者…">
+          </div>
+          <div class="f">
+            <label>板块</label>
+            <select id="fdCat"><option value="">全部板块</option></select>
+          </div>
+          <div class="f">
+            <label>内容类型</label>
+            <select id="fdKind"><option value="">全部</option><option value="official">仅官方</option><option value="partner">仅伙伴</option></select>
+          </div>
+          <div class="f">
+            <label>排序</label>
+            <select id="fdSort"><option value="active">最新活跃</option><option value="created">最新发布</option><option value="hot">最热</option></select>
+          </div>
+        </div>
+        <div id="fdList"></div>
+      </section>
+
+      <!-- ===== 全局检索 ===== -->
+      <section class="page" id="page-search">
+        <div class="fbar">
+          <div class="f f-grow">
+            <label>关键词（标题 / 摘要 / 标签 / 作者）</label>
+            <input type="text" id="srQ" placeholder="输入关键词，回车或点搜索…">
+          </div>
+          <div class="f">
+            <label>来源</label>
+            <select id="srSrc"><option value="">全部</option><option value="forum">论坛</option><option value="feishu">飞书</option><option value="manual">手动</option></select>
+          </div>
+          <div class="f">
+            <label>类型</label>
+            <select id="srKind"><option value="">全部</option><option value="activity">活动</option><option value="notice">公告</option><option value="welfare">福利</option><option value="share">伙伴分享</option><option value="help">求助</option><option value="other">其他</option></select>
+          </div>
+          <div class="f">
+            <label>板块</label>
+            <select id="srCat"><option value="">全部板块</option></select>
+          </div>
+          <div class="f">
+            <label>状态</label>
+            <select id="srSt"><option value="">不限</option><option value="running">进行中</option><option value="upcoming">未开始</option><option value="ended">已结束</option></select>
+          </div>
+          <div class="f">
+            <label>结果视图</label>
+            <div class="vtabs"><span class="vt on" data-vt="list">列表</span><span class="vt" data-vt="table">表格</span></div>
+          </div>
+          <button class="btn primary" id="srBtn">搜索</button>
+        </div>
+        <div id="srResult"></div>
+      </section>
+
+      <!-- ===== 数据管理 ===== -->
+      <section class="page" id="page-manage">
+        <div class="grid g2">
+          <div class="panel">
+            <div class="p-hd">手动录入飞书活动</div>
+            <div class="p-bd">
+              <div class="form-grid">
+                <div class="full"><label>活动标题</label><input type="text" id="mTitle" placeholder="如：TRAE 共学营 第 X 期"></div>
+                <div class="full"><label>活动要求 / 说明</label><textarea id="mReq" placeholder="报名条件、参与方式、注意事项…"></textarea></div>
+                <div><label>开始时间</label><input type="datetime-local" id="mStart"></div>
+                <div><label>截止时间</label><input type="datetime-local" id="mEnd"></div>
+                <div><label>来源链接</label><input type="text" id="mUrl" placeholder="飞书文档 / 报名问卷链接"></div>
+                <div><label>类型</label>
+                  <select id="mKind"><option value="activity">官方活动</option><option value="welfare">福利活动</option><option value="notice">公告</option></select>
+                </div>
+              </div>
+              <div style="display:flex;gap:10px;margin-top:16px">
+                <button class="btn primary" id="mSave">保存录入</button>
+                <button class="btn" id="mClear">清空表单</button>
+              </div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="p-hd">数据备份与恢复</div>
+            <div class="p-bd">
+              <p style="font:13px/1.7 var(--sans);color:var(--muted);margin-bottom:14px">所有数据存于浏览器 localStorage。建议定期导出 JSON 备份；恢复时导入备份文件，或粘贴论坛 API 原始 JSON 兜底。</p>
+              <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <button class="btn primary" id="mExport">导出备份 JSON</button>
+                <button class="btn" id="mImport">导入 JSON 文件</button>
+                <button class="btn danger" id="mClearData">清空并重新抓取</button>
+              </div>
+              <div style="margin-top:16px">
+                <label>抓取通道设置</label>
+                <p style="font:12px/1.6 var(--sans);color:var(--dim);margin-bottom:10px">
+                  纯网页也能动态抓取，靠的是公共 CORS 代理。优先级：<b>自建代理</b> &gt; <b>corsfix 公共代理</b>（默认，已实测可用）&gt; corsproxy.io &gt; allorigins。
+                </p>
+                <div style="padding:10px 12px;border:1px solid var(--line-strong);background:var(--panel-alt);margin-bottom:12px">
+                  <div style="font:700 12px/1.4 var(--sans);color:var(--accent);margin-bottom:4px">当前通道</div>
+                  <div style="font:12px/1.6 var(--sans);color:var(--muted)" id="channelHint">
+                    · 通过 http(s) 网址访问时：默认走 corsfix 公共代理，直接点「抓取最新」即可。
+                    · 双击 HTML（file://）打开时：浏览器 Origin 为 null，代理会拒绝抓取，此时只能浏览内置快照数据。
+                    · 想长期稳定：在下面填一个自建 Cloudflare Worker 地址（免费，见说明）。
+                  </div>
+                </div>
+                <label style="margin-top:4px">① 自建代理地址（推荐长期使用，Cloudflare Worker）</label>
+                <input type="text" id="mCustomProxy" placeholder="https://你的worker名.你的子域.workers.dev" style="font-family:var(--mono);font-size:12px">
+                <div style="display:flex;gap:10px;margin-top:8px;align-items:center;flex-wrap:wrap">
+                  <button class="btn primary" id="mCustomProxySave">保存自建代理</button>
+                  <button class="btn" id="mCustomProxyClear">清除</button>
+                  <button class="btn" id="mCustomProxyTest">测试连通</button>
+                  <span id="mCustomProxyState" style="font:600 11px/1.4 var(--mono);color:var(--dim)"></span>
+                </div>
+                <label style="margin-top:14px">② corsproxy.io API Key（可选，最后兜底）</label>
+                <p style="font:12px/1.6 var(--sans);color:var(--dim);margin-bottom:8px">
+                  可选。免费注册 <a href="https://console.corsproxy.io/" target="_blank">console.corsproxy.io</a> 后复制 Key 填入。
+                  免费档每月 1 万次、60 RPM，超额或超速会被拒（401/403/429）。
+                </p>
+                <input type="text" id="mProxyKey" placeholder="corsproxy.io 的 API Key（可留空）" style="font-family:var(--mono);font-size:12px">
+                <div style="display:flex;gap:10px;margin-top:8px">
+                  <button class="btn" id="mProxyKeySave">保存 Key</button>
+                  <button class="btn" id="mProxyKeyClear">清除</button>
+                </div>
+              </div>
+              <div style="margin-top:16px">
+                <label>请求频率</label>
+                <p style="font:12px/1.6 var(--sans);color:var(--dim);margin-bottom:8px">
+                  控制抓取时对论坛发送请求的节奏。默认低频，尊重论坛服务；网络/代理不稳时建议保持低频，需要更快的抓取可调高。
+                </p>
+                <select id="mFreq">
+                  <option value="low">低频（默认）· 间隔 1.2s · 并发 1</option>
+                  <option value="medium">中频 · 间隔 0.6s · 并发 2</option>
+                  <option value="high">高频 · 间隔 0.2s · 并发 3</option>
+                </select>
+                <button class="btn primary" id="mFreqSave" style="margin-top:10px">保存频率</button>
+              </div>
+              <div style="margin-top:16px">
+                <label>粘贴 JSON（论坛 API 原始返回 / 备份）</label>
+                <textarea id="mPaste" style="min-height:120px;font-family:var(--mono);font-size:11.5px" placeholder='{"topic_list":{...}} 或备份 JSON'></textarea>
+                <div style="display:flex;gap:10px;margin-top:10px">
+                  <button class="btn" id="mPasteParse">解析并合并</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="panel" style="margin-top:14px">
+          <div class="p-hd">已收录条目 <span class="p-sub" id="mgCount"></span></div>
+          <div class="p-bd" style="padding:8px 16px 16px">
+            <table class="tbl">
+              <thead><tr><th>来源</th><th>标题</th><th>板块/类型</th><th>作者</th><th>时间</th><th>操作</th></tr></thead>
+              <tbody id="mgBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<input type="file" id="fileImp" accept=".json,application/json" style="display:none">
+<div class="modal-mask" id="modal">
+  <div class="modal">
+    <div class="m-hd"><span id="mTitle2"></span><span class="x" id="mClose">×</span></div>
+    <div class="m-bd" id="mBody2"></div>
+    <div class="m-ft"><button class="btn" id="mClose2">关闭</button></div>
+  </div>
+</div>
+<div id="toast"></div>
+
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
