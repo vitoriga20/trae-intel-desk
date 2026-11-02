@@ -8,13 +8,13 @@ const CFG = {
   base: "https://forum.trae.cn",
   // 抓取通道（纯前端方案，按优先级依次尝试）
   // 1) 自定义代理：自建 Cloudflare Worker（数据管理页可填）
-  // 2) corsfix 公共代理：实测可用，要求页面来自 http(s) 地址（file:// 会被拒）
+  // 2) corsfix 公共代理：sdk=1 走免注册免费档，任何公网域名可用（实测 GitHub Pages 下 200）
   // 3) corsproxy.io：需 API Key
   // 4) allorigins：公共兜底，常超时
   customProxy: "",
   proxyUrlStore: "trae_intel_proxyurl",
   proxyKey: "",
-  corsfixProxy: "https://proxy.corsfix.com/?",
+  corsfixProxy: "https://proxy.corsfix.com/?sdk=1&url=",
   proxyKeyStore: "trae_intel_proxykey",
   // 请求频率（每请求间隔 + 正文并发），默认低频；corsfix 实测间隔 1 秒较稳
   freqStore: "trae_intel_freq",
@@ -41,8 +41,8 @@ const CFG = {
     {id:10, name:"案例与作品", path:"/c/10-category/10.json"},
     {id:43, name:"TraeWork 专区", path:"/c/43-category/43.json"}
   ],
-  feedPages: 2,
-  actPages: 2,
+  feedPages: 1,
+  actPages: 1,
   kindRules: {
     actKeywords: ["大赛","比赛","挑战赛","活动","报名","征集","直播","训练营","共创","评选","评选开启","开奖","共学"],
     noticeCats: [4],
@@ -619,9 +619,9 @@ async function fetchViaProxy(url){
     const cu = buildProxyUrl(custom, enc);
     if(cu) targets.push({name:"自建代理", url:cu});
   }
-  // 2) corsfix 公共代理（实测可用；直接拼接原始 URL）
+  // 2) corsfix 公共代理（sdk=1 免注册免费档；要求目标 URL 编码后再拼）
   if(CFG.corsfixProxy){
-    targets.push({name:"corsfix", url:CFG.corsfixProxy + url});
+    targets.push({name:"corsfix", url:CFG.corsfixProxy + enc});
   }
   // 3) corsproxy.io（有 Key 时）
   if(key){
