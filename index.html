@@ -216,9 +216,10 @@
                 <div style="padding:10px 12px;border:1px solid var(--line-strong);background:var(--panel-alt);margin-bottom:12px">
                   <div style="font:700 12px/1.4 var(--sans);color:var(--accent);margin-bottom:4px">当前通道</div>
                   <div style="font:12px/1.6 var(--sans);color:var(--muted)" id="channelHint">
-                    · 通过 http(s) 网址访问时：默认走 corsfix 公共代理，直接点「抓取最新」即可。
-                    · 双击 HTML（file://）打开时：浏览器 Origin 为 null，代理会拒绝抓取，此时只能浏览内置快照数据。
-                    · 想长期稳定：在下面填一个自建 Cloudflare Worker 地址（免费，见说明）。
+                    · 部署在 http(s) 网址下：默认走 corsfix 免注册代理（sdk 免费档），直接点「抓取最新」即可。
+                    · 免费档限制：60 次/分钟、约 10 MB/月流量。已把每次抓取压到 9 页列表 + 少量正文，大约够每月几十次刷新。
+                    · 双击 HTML（file://）打开：浏览器 Origin 为 null，代理会拒绝，此时只能浏览内置快照。
+                    · 想彻底稳定：在下面填自建 Cloudflare Worker 地址（免费，无额度限制）。
                   </div>
                 </div>
                 <label style="margin-top:4px">① 自建代理地址（推荐长期使用，Cloudflare Worker）</label>
